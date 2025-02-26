@@ -1,0 +1,9 @@
+{
+    "files.associations": {
+        "mpu6050.h": "c",
+        "main.h": "c",
+        "i2c.h": "c",
+        "gpio.h": "c",
+        "bsp_dwt.h": "c"
+    }
+}

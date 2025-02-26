@@ -1,0 +1,28 @@
+--cpu Cortex-M3
+"i2c_study\startup_stm32f103xe.o"
+"i2c_study\main.o"
+"i2c_study\gpio.o"
+"i2c_study\i2c.o"
+"i2c_study\stm32f1xx_it.o"
+"i2c_study\stm32f1xx_hal_msp.o"
+"i2c_study\stm32f1xx_hal_gpio_ex.o"
+"i2c_study\stm32f1xx_hal_i2c.o"
+"i2c_study\stm32f1xx_hal.o"
+"i2c_study\stm32f1xx_hal_rcc.o"
+"i2c_study\stm32f1xx_hal_rcc_ex.o"
+"i2c_study\stm32f1xx_hal_gpio.o"
+"i2c_study\stm32f1xx_hal_dma.o"
+"i2c_study\stm32f1xx_hal_cortex.o"
+"i2c_study\stm32f1xx_hal_pwr.o"
+"i2c_study\stm32f1xx_hal_flash.o"
+"i2c_study\stm32f1xx_hal_flash_ex.o"
+"i2c_study\stm32f1xx_hal_exti.o"
+"i2c_study\stm32f1xx_hal_tim.o"
+"i2c_study\stm32f1xx_hal_tim_ex.o"
+"i2c_study\system_stm32f1xx.o"
+"i2c_study\mpu6050.o"
+"i2c_study\bsp_dwt.o"
+--strict --scatter "I2C_study\I2C_study.sct"
+--summary_stderr --info summarysizes --map --load_addr_map_info --xref --callgraph --symbols
+--info sizes --info totals --info unused --info veneers
+--list "I2C_study.map" -o I2C_study\I2C_study.axf

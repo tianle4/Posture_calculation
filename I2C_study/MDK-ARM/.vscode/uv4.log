@@ -1,0 +1,12 @@
+*** Using Compiler 'V5.06 update 6 (build 750)', folder: 'D:\Keil_v5\ARM\ARMCC\Bin'
+Build target 'I2C_study'
+compiling MPU6050.c...
+compiling main.c...
+linking...
+I2C_study\I2C_study.axf: Error: L6218E: Undefined symbol MPU6050_velocity (referred from main.o).
+Not enough information to list image symbols.
+Not enough information to list load addresses in the image map.
+Finished: 2 information, 0 warning and 1 error messages.
+"I2C_study\I2C_study.axf" - 1 Error(s), 0 Warning(s).
+Target not created.
+Build Time Elapsed:  00:00:02
