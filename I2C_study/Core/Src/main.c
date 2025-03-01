@@ -45,15 +45,23 @@ typedef struct{
 }MPU6050;
 
 typedef struct {
-  float q0,q1,q2,q3;
+  float angle;      // 滤波后的角度
+  float bias;       // 陀螺仪零漂
+  float P[2][2];    // 估计误差协方差
+  float Q_angle;    // 角度过程噪声协方差
+  float Q_bias;     // 陀螺仪偏置过程噪声协方差
+  float R_measure;  // 测量噪声协方差
+} KalmanFilter;
 
+typedef struct {
+  float w,x,y,z;
 }Quaternion;
 
 /* USER CODE END PTD */
 
 /* Private define ------------------------------------------------------------*/
 /* USER CODE BEGIN PD */
-
+#define M_PI 3.1415926
 /* USER CODE END PD */
 
 /* Private macro -------------------------------------------------------------*/
@@ -66,15 +74,19 @@ typedef struct {
 /* USER CODE BEGIN PV */
 MPU6050 MPU6050_Data;
 
-Quaternion q = {1.0, 0.0, 0.0, 0.0};//初始化四元数
-float Ki = 0;
-float Kp = 1.0;
-float integralFBx = 0.0f,  integralFBy = 0.0f, integralFBz = 0.0f;
+KalmanFilter rollKalman;
+KalmanFilter yawKalman;
+KalmanFilter pitchKalman;
+
+Quaternion q;
 
 uint32_t DWT_CNT;
 float dt;
 
 float roll, pitch, yaw;
+float raw_roll, raw_pitch, raw_yaw;
+float filtered_roll, filtered_pitch, filtered_yaw;
+
 
 /* USER CODE END PV */
 
@@ -120,13 +132,28 @@ int main(void)
   MX_GPIO_Init();
   MX_I2C1_Init();
   /* USER CODE BEGIN 2 */
+
   DWT_Init(72);
+
   void MPU6050_Init(void);
   void MPU6050_read_data(void);
-  void MPU6050_Velocity(void);
-  void QuaternionNormalize(Quaternion *q);
-  void QuaternionUpdate(float gx, float gy, float gz, float ax, float ay, float az, float dt);
-  void QuaternionToEuler(Quaternion *q, float *roll, float *pitch, float *yaw);
+
+  void InitQuaternion(Quaternion *q);
+  Quaternion multiplyQuaternions(const Quaternion *q1, const Quaternion *q2);
+  void updateQuaternion(Quaternion *q, int16_t gx, int16_t gy, int16_t gz, float dt);
+  void calculateAngles(Quaternion *q, float *roll, float *pitch, float *yaw);
+
+  void kalmanInit(KalmanFilter *filter, float Q_angle, float Q_bias, float R_measure);
+  kalmanInit(&rollKalman, 0.001f, 0.003f, 0.03f);
+  kalmanInit(&pitchKalman, 0.001f, 0.003f, 0.03f);
+  kalmanInit(&yawKalman, 0.001f, 0.003f, 0.03f);
+  float kalmanUpdate(KalmanFilter *filter, float newAngle, float newRate, float dt);
+  void calculateAccelAngles(float *accel_roll, float *accel_pitch); 
+  
+  q.w = 1.0f;
+  q.x = 0.0f;
+  q.y = 0.0f;
+  q.z = 0.0f;
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -135,15 +162,37 @@ int main(void)
   {
     dt = DWT_GetDeltaT(&DWT_CNT);
     MPU6050_read_data();
-    MPU6050_Velocity();
-    QuaternionUpdate(MPU6050_Data.gyro_x,MPU6050_Data.gyro_y,MPU6050_Data.gyro_z,
-                     MPU6050_Data.accel_x,MPU6050_Data.accel_y,MPU6050_Data.accel_z,dt);
-    QuaternionToEuler(&q,&roll,&pitch,&yaw);
     
+    updateQuaternion(&q,MPU6050_Data.gyro_x,MPU6050_Data.gyro_y,MPU6050_Data.gyro_z,dt);
+    // calculateAngles(&q,&roll,&pitch,&yaw);
+
+    // 计算加速度计角度
+    float accel_roll, accel_pitch;
+    calculateAccelAngles(&accel_roll, &accel_pitch);
+
+    // 将陀螺仪原始数据转换为角速度(°/s)
+    float gyro_factor = 131.0f; // 对于±250°/s量程
+    float gyro_roll = MPU6050_Data.gyro_x / gyro_factor;
+    float gyro_pitch = MPU6050_Data.gyro_y / gyro_factor;
+    float gyro_yaw = MPU6050_Data.gyro_z / gyro_factor;
+
+    // 应用卡尔曼滤波
+    filtered_roll = kalmanUpdate(&rollKalman, accel_roll, gyro_roll, dt);
+    filtered_pitch = kalmanUpdate(&pitchKalman, accel_pitch, gyro_pitch, dt);
+
+    // 注意：yaw角不能从加速度计得到，需要磁力计
+    // 这里简单地使用四元数计算的yaw值
+    filtered_yaw = raw_yaw;
+
+    // 使用滤波后的角度作为最终输出
+    roll = filtered_roll;
+    pitch = filtered_pitch;
+    yaw = filtered_yaw;
+
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
-    HAL_Delay(100);
+    HAL_Delay(10);
   }
   /* USER CODE END 3 */
 }
@@ -188,13 +237,6 @@ void SystemClock_Config(void)
 }
 
 /* USER CODE BEGIN 4 */
-void MPU6050_Velocity(void)
-{
-  MPU6050_Data.velocity_x = MPU6050_Data.accel_x * dt;
-  MPU6050_Data.velocity_y = MPU6050_Data.accel_y * dt;
-  MPU6050_Data.velocity_z = MPU6050_Data.accel_z * dt;
-}
-
 void MPU6050_read_data(void)
 {
   uint8_t readBuffer[14];
@@ -230,70 +272,112 @@ void MPU6050_Init(void)
   }
   
 }
-void QuaternionNormalize(Quaternion *q) 
+
+void InitQuaternion(Quaternion *q)
 {
-    float norm = sqrt(q->q0 * q->q0 + q->q1 * q->q1 + q->q2 * q->q2 + q->q3 * q->q3);
-    q->q0 /= norm;
-    q->q1 /= norm;
-    q->q2 /= norm;
-    q->q3 /= norm;
+  float norm = sqrt(q->w * q->w + q->x * q->x + q->y * q->y + q->z * q->z);
+  q->w /= norm;
+  q->x /= norm;
+  q->y /= norm;
+  q->z /= norm;
 }
 
-void QuaternionToEuler(Quaternion *q, float *roll, float *pitch, float *yaw) 
+Quaternion multiplyQuaternions(const Quaternion *q1, const Quaternion *q2) 
 {
-    *roll = atan2(2.0f * (q->q0 * q->q1 + q->q2 * q->q3), 1.0f - 2.0f * (q->q1 * q->q1 + q->q2 * q->q2));
-    *pitch = asin(2.0f * (q->q0 * q->q2 - q->q1 * q->q3));
-    *yaw = atan2(2.0f * (q->q0 * q->q3 + q->q1 * q->q2), 1.0f - 2.0f * (q->q2 * q->q2 + q->q3 * q->q3));
+  Quaternion output;
+  output.w = q1->w * q2->w - q1->x * q2->x - q1->y * q2->y - q1->z * q2->z;
+  output.x = q1->w * q2->x + q1->x * q2->w + q1->y * q2->z - q1->z * q2->y;
+  output.y = q1->w * q2->y - q1->x * q2->z + q1->y * q2->w + q1->z * q2->x;
+  output.z = q1->w * q2->z + q1->x * q2->y - q1->y * q2->x + q1->z * q2->w;
+  return output;
 }
 
-void QuaternionUpdate(float gx, float gy, float gz, float ax, float ay, float az, float dt) 
+void updateQuaternion(Quaternion *q, int16_t gx, int16_t gy, int16_t gz, float dt) 
 {
-    float norm;
-    float halfvx, halfvy, halfvz;
-    float halfex, halfey, halfez;
-    float qa, qb, qc;
+  float norm;
+  float half_dt = dt * 0.5;
+  float wx = gx * half_dt;
+  float wy = gy * half_dt;
+  float wz = gz * half_dt;
 
-    // 使用加速度计数据计算误差
-    norm = sqrt(ax * ax + ay * ay + az * az);
-    ax /= norm;
-    ay /= norm;
-    az /= norm;
+  Quaternion q_temp;
+  q_temp.w = 0;
+  q_temp.x = wx;
+  q_temp.y = wy;
+  q_temp.z = wz;
 
-    halfvx = q.q1 * q.q3 - q.q0 * q.q2;
-    halfvy = q.q0 * q.q1 + q.q2 * q.q3;
-    halfvz = q.q0 * q.q0 - 0.5f + q.q3 * q.q3;
-
-    halfex = (ay * halfvz - az * halfvy);
-    halfey = (az * halfvx - ax * halfvz);
-    halfez = (ax * halfvy - ay * halfvx);
-
-    // 积分误差
-    integralFBx += Ki * halfex * dt;
-    integralFBy += Ki * halfey * dt;
-    integralFBz += Ki * halfez * dt;
-
-    // 应用比例和积分控制
-    gx = gx + Kp * halfex + integralFBx;
-    gy = gy + Kp * halfey + integralFBy;
-    gz = gz + Kp * halfez + integralFBz;
-
-    // 归一化陀螺仪数据
-    gx *= (1.0f / 131.0f);
-    gy *= (1.0f / 131.0f);
-    gz *= (1.0f / 131.0f);
-
-    // 四元数微分方程
-    qa = q.q0;
-    qb = q.q1;
-    qc = q.q2;
-    q.q0 += (-qb * gx - qc * gy - q.q3 * gz) * 0.5f * dt;
-    q.q1 += (qa * gx + qc * gz - q.q3 * gy) * 0.5f * dt;
-    q.q2 += (qa * gy - qb * gz + q.q3 * gx) * 0.5f * dt;
-    q.q3 += (qa * gz + qb * gy - qc * gx) * 0.5f * dt;
-
-    // 归一化四元数
-    QuaternionNormalize(&q);
+  // 更新四元数
+  *q = multiplyQuaternions(q, &q_temp);
+  InitQuaternion(q);
 }
+
+void calculateAngles(Quaternion *q, float *roll, float *pitch, float *yaw) 
+{
+  *roll = atan2(2 * (q->w * q->x + q->y * q->z), 1 - 2 * (q->x * q->x + q->y * q->y));
+  *pitch = asin(2 * (q->w * q->y - q->z * q->x));
+  *yaw = atan2(2 * (q->w * q->z + q->x * q->y), 1 - 2 * (q->y * q->y + q->z * q->z));
+}
+
+void kalmanInit(KalmanFilter *filter, float Q_angle, float Q_bias, float R_measure) 
+{
+  filter->angle = 0.0f;
+  filter->bias = 0.0f;
+  
+  filter->P[0][0] = 1.0f;
+  filter->P[0][1] = 0.0f;
+  filter->P[1][0] = 0.0f;
+  filter->P[1][1] = 1.0f;
+  
+  filter->Q_angle = Q_angle;
+  filter->Q_bias = Q_bias;
+  filter->R_measure = R_measure;
+}
+
+float kalmanUpdate(KalmanFilter *filter, float newAngle, float newRate, float dt)
+{
+  // 预测步骤
+  filter->angle += dt * (newRate - filter->bias);
+  
+  filter->P[0][0] += dt * (dt * filter->P[1][1] - filter->P[0][1] - filter->P[1][0] + filter->Q_angle);
+  filter->P[0][1] -= dt * filter->P[1][1];
+  filter->P[1][0] -= dt * filter->P[1][1];
+  filter->P[1][1] += filter->Q_bias * dt;
+  
+  // 更新步骤
+  float y = newAngle - filter->angle;
+  float S = filter->P[0][0] + filter->R_measure;
+  float K[2];
+  K[0] = filter->P[0][0] / S;
+  K[1] = filter->P[1][0] / S;
+  
+  filter->angle += K[0] * y;
+  filter->bias += K[1] * y;
+  
+  float P00_temp = filter->P[0][0];
+  float P01_temp = filter->P[0][1];
+  
+  filter->P[0][0] -= K[0] * P00_temp;
+  filter->P[0][1] -= K[0] * P01_temp;
+  filter->P[1][0] -= K[1] * P00_temp;
+  filter->P[1][1] -= K[1] * P01_temp;
+  
+  return filter->angle;
+}
+
+// 从加速度计数据计算角度
+void calculateAccelAngles(float *accel_roll, float *accel_pitch) 
+{
+  // 将原始整数值转换为物理量
+  float accel_factor = 16384.0f; // 对于±2g量程
+  float ax = MPU6050_Data.accel_x / accel_factor;
+  float ay = MPU6050_Data.accel_y / accel_factor;
+  float az = MPU6050_Data.accel_z / accel_factor;
+  
+  // 通过加速度计计算roll和pitch角度
+  *accel_roll = atan2f(ay, az) * 180.0f / M_PI;
+  *accel_pitch = atan2f(-ax, sqrtf(ay * ay + az * az)) * 180.0f / M_PI;
+}
+
 /* USER CODE END 4 */
 
 /**
