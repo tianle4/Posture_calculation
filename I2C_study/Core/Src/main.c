@@ -61,7 +61,7 @@ typedef struct {
 
 /* Private define ------------------------------------------------------------*/
 /* USER CODE BEGIN PD */
-#define M_PI 3.1415926
+#define M_PI 3.1415926 //圆周率
 /* USER CODE END PD */
 
 /* Private macro -------------------------------------------------------------*/
@@ -84,7 +84,7 @@ uint32_t DWT_CNT;
 float dt;
 
 float roll, pitch, yaw;
-float raw_roll, raw_pitch, raw_yaw;
+float raw_roll,raw_pitch,raw_yaw;
 float filtered_roll, filtered_pitch, filtered_yaw;
 
 
@@ -164,27 +164,24 @@ int main(void)
     MPU6050_read_data();
     
     updateQuaternion(&q,MPU6050_Data.gyro_x,MPU6050_Data.gyro_y,MPU6050_Data.gyro_z,dt);
-    // calculateAngles(&q,&roll,&pitch,&yaw);
+    calculateAngles(&q, &raw_roll, &raw_pitch, &raw_yaw);
 
-    // 计算加速度计角度
     float accel_roll, accel_pitch;
+
     calculateAccelAngles(&accel_roll, &accel_pitch);
 
-    // 将陀螺仪原始数据转换为角速度(°/s)
-    float gyro_factor = 131.0f; // 对于±250°/s量程
+    float gyro_factor = 131.0f;
     float gyro_roll = MPU6050_Data.gyro_x / gyro_factor;
     float gyro_pitch = MPU6050_Data.gyro_y / gyro_factor;
     float gyro_yaw = MPU6050_Data.gyro_z / gyro_factor;
 
-    // 应用卡尔曼滤波
     filtered_roll = kalmanUpdate(&rollKalman, accel_roll, gyro_roll, dt);
     filtered_pitch = kalmanUpdate(&pitchKalman, accel_pitch, gyro_pitch, dt);
-
+      
     // 注意：yaw角不能从加速度计得到，需要磁力计
     // 这里简单地使用四元数计算的yaw值
     filtered_yaw = raw_yaw;
 
-    // 使用滤波后的角度作为最终输出
     roll = filtered_roll;
     pitch = filtered_pitch;
     yaw = filtered_yaw;
@@ -273,7 +270,7 @@ void MPU6050_Init(void)
   
 }
 
-void InitQuaternion(Quaternion *q)
+void InitQuaternion(Quaternion *q)//四元数初始化
 {
   float norm = sqrt(q->w * q->w + q->x * q->x + q->y * q->y + q->z * q->z);
   q->w /= norm;
@@ -282,7 +279,7 @@ void InitQuaternion(Quaternion *q)
   q->z /= norm;
 }
 
-Quaternion multiplyQuaternions(const Quaternion *q1, const Quaternion *q2) 
+Quaternion multiplyQuaternions(const Quaternion *q1, const Quaternion *q2)//四元数相乘
 {
   Quaternion output;
   output.w = q1->w * q2->w - q1->x * q2->x - q1->y * q2->y - q1->z * q2->z;
@@ -292,7 +289,7 @@ Quaternion multiplyQuaternions(const Quaternion *q1, const Quaternion *q2)
   return output;
 }
 
-void updateQuaternion(Quaternion *q, int16_t gx, int16_t gy, int16_t gz, float dt) 
+void updateQuaternion(Quaternion *q, int16_t gx, int16_t gy, int16_t gz, float dt)//四元数运算（更新）
 {
   float norm;
   float half_dt = dt * 0.5;
@@ -311,14 +308,14 @@ void updateQuaternion(Quaternion *q, int16_t gx, int16_t gy, int16_t gz, float d
   InitQuaternion(q);
 }
 
-void calculateAngles(Quaternion *q, float *roll, float *pitch, float *yaw) 
+void calculateAngles(Quaternion *q, float *roll, float *pitch, float *yaw) //简单计算姿态角（积分）
 {
   *roll = atan2(2 * (q->w * q->x + q->y * q->z), 1 - 2 * (q->x * q->x + q->y * q->y));
   *pitch = asin(2 * (q->w * q->y - q->z * q->x));
   *yaw = atan2(2 * (q->w * q->z + q->x * q->y), 1 - 2 * (q->y * q->y + q->z * q->z));
 }
 
-void kalmanInit(KalmanFilter *filter, float Q_angle, float Q_bias, float R_measure) 
+void kalmanInit(KalmanFilter *filter, float Q_angle, float Q_bias, float R_measure) //卡尔曼滤波初始化
 {
   filter->angle = 0.0f;
   filter->bias = 0.0f;
@@ -333,7 +330,7 @@ void kalmanInit(KalmanFilter *filter, float Q_angle, float Q_bias, float R_measu
   filter->R_measure = R_measure;
 }
 
-float kalmanUpdate(KalmanFilter *filter, float newAngle, float newRate, float dt)
+float kalmanUpdate(KalmanFilter *filter, float newAngle, float newRate, float dt) //卡尔曼滤波运算
 {
   // 预测步骤
   filter->angle += dt * (newRate - filter->bias);
@@ -364,7 +361,6 @@ float kalmanUpdate(KalmanFilter *filter, float newAngle, float newRate, float dt
   return filter->angle;
 }
 
-// 从加速度计数据计算角度
 void calculateAccelAngles(float *accel_roll, float *accel_pitch) 
 {
   // 将原始整数值转换为物理量

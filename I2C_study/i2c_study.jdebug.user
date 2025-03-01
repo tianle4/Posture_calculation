@@ -8,19 +8,20 @@ GraphedExpression="(MPU6050_Data).accel_z", Color=#094fa0
 GraphedExpression="(MPU6050_Data).gyro_x", Color=#000000
 GraphedExpression="(MPU6050_Data).gyro_y", Color=#ff0000
 GraphedExpression="(MPU6050_Data).gyro_z", Color=#55ff00
-OpenDocument="stm32f1xx_hal_i2c.c", FilePath="D:/STM32 Project/Posture_calculation/I2C_study/Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_i2c.c", Line=7312
-OpenDocument="stm32f1xx_it.c", FilePath="D:/STM32 Project/Posture_calculation/I2C_study/Core/Src/stm32f1xx_it.c", Line=79
-OpenDocument="stm32f1xx_hal.c", FilePath="D:/STM32 Project/Posture_calculation/I2C_study/Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal.c", Line=292
 OpenDocument="main.c", FilePath="D:/STM32 Project/Posture_calculation/I2C_study/Core/Src/main.c", Line=95
+OpenDocument="stm32f1xx_hal_i2c.c", FilePath="D:/STM32 Project/Posture_calculation/I2C_study/Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_i2c.c", Line=7357
+OpenDocument="stm32f1xx_it.c", FilePath="D:/STM32 Project/Posture_calculation/I2C_study/Core/Src/stm32f1xx_it.c", Line=79
+OpenDocument="stm32f1xx_hal.c", FilePath="D:/STM32 Project/Posture_calculation/I2C_study/Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal.c", Line=368
+OpenDocument="startup_stm32f103xe.s", FilePath="D:/STM32 Project/Posture_calculation/I2C_study/startup_stm32f103xe.s", Line=52
 OpenToolbar="Debug", Floating=0, x=0, y=0
-OpenWindow="Disassembly", DockArea=RIGHT, x=0, y=0, w=758, h=142, FilterBarShown=0, TotalValueBarShown=0, ToolBarShown=0
+OpenWindow="Disassembly", DockArea=RIGHT, x=0, y=0, w=758, h=168, FilterBarShown=0, TotalValueBarShown=0, ToolBarShown=0
 OpenWindow="Watched Data 1", DockArea=LEFT, x=0, y=0, w=414, h=909, TabPos=0, TopOfStack=1, FilterBarShown=0, TotalValueBarShown=0, ToolBarShown=0
 OpenWindow="Functions", DockArea=LEFT, x=0, y=0, w=414, h=909, TabPos=1, TopOfStack=0, FilterBarShown=0, TotalValueBarShown=0, ToolBarShown=0
 OpenWindow="Data Sampling", DockArea=RIGHT, x=0, y=2, w=758, h=302, FilterBarShown=0, TotalValueBarShown=0, ToolBarShown=0, VisibleTab=0, UniformSampleSpacing=0
-OpenWindow="Timeline", DockArea=RIGHT, x=0, y=1, w=758, h=479, FilterBarShown=0, TotalValueBarShown=0, ToolBarShown=1, DataPaneShown=1, PowerPaneShown=0, CodePaneShown=0, PinCursor="Cursor Movable", TimePerDiv="2 s / Div", TimeStampFormat="Time", DataGraphDrawAsPoints=0, DataGraphLegendShown=1, DataGraphUniformSampleSpacing=0, DataGraphLegendPosition="488;0", PowerGraphDrawAsPoints=0, PowerGraphLegendShown=0, PowerGraphAvgFilterTime=Off, PowerGraphAvgFilterLen=Off, PowerGraphUniformSampleSpacing=0, PowerGraphLegendPosition="557;0", CodeGraphLegendShown=0, CodeGraphLegendPosition="571;0"
+OpenWindow="Timeline", DockArea=RIGHT, x=0, y=1, w=758, h=453, FilterBarShown=0, TotalValueBarShown=0, ToolBarShown=1, DataPaneShown=1, PowerPaneShown=0, CodePaneShown=0, PinCursor="Cursor Movable", TimePerDiv="2 s / Div", TimeStampFormat="Time", DataGraphDrawAsPoints=0, DataGraphLegendShown=1, DataGraphUniformSampleSpacing=0, DataGraphLegendPosition="0;0", PowerGraphDrawAsPoints=0, PowerGraphLegendShown=0, PowerGraphAvgFilterTime=Off, PowerGraphAvgFilterLen=Off, PowerGraphUniformSampleSpacing=0, PowerGraphLegendPosition="557;0", CodeGraphLegendShown=0, CodeGraphLegendPosition="571;0"
 TableHeader="Functions", SortCol="Name", SortOrder="ASCENDING", VisibleCols=["Name";"Address";"Size";"#Insts";"Source"], ColWidths=[910;100;100;100;100]
-TableHeader="Data Sampling Table", SortCol="None", SortOrder="ASCENDING", VisibleCols=["Index";"Time";" yaw";" pitch";" roll";" (MPU6050_Data).accel_x";" (MPU6050_Data).accel_y";" (MPU6050_Data).accel_z";" (MPU6050_Data).gyro_x";" (MPU6050_Data).gyro_y";" (MPU6050_Data).gyro_z"], ColWidths=[100;100;100;100;100;100;100;100;100;100;100]
-TableHeader="Data Sampling Setup", SortCol="Expression", SortOrder="ASCENDING", VisibleCols=["Expression";"Type";"Value";"Min";"Max";"Average";"# Changes";"Min. Change";"Max. Change"], ColWidths=[100;100;102;102;100;102;100;110;110]
+TableHeader="Data Sampling Table", SortCol="Index", SortOrder="ASCENDING", VisibleCols=["Index";"Time";" yaw";" pitch";" roll";" (MPU6050_Data).accel_x";" (MPU6050_Data).accel_y";" (MPU6050_Data).accel_z";" (MPU6050_Data).gyro_x";" (MPU6050_Data).gyro_y";" (MPU6050_Data).gyro_z"], ColWidths=[100;100;100;100;100;100;100;100;100;100;100]
+TableHeader="Data Sampling Setup", SortCol="Expression", SortOrder="ASCENDING", VisibleCols=["Expression";"Type";"Value";"Min";"Max";"Average";"# Changes";"Min. Change";"Max. Change"], ColWidths=[100;100;100;102;100;118;100;107;107]
 TableHeader="Power Sampling", SortCol="Index", SortOrder="ASCENDING", VisibleCols=["Index";"Time";"Ch 0"], ColWidths=[100;100;100]
 TableHeader="RegisterSelectionDialog", SortCol="None", SortOrder="ASCENDING", VisibleCols=[], ColWidths=[]
 TableHeader="Watched Data 1", SortCol="Expression", SortOrder="ASCENDING", VisibleCols=["Expression";"Value";"Location";"Refresh"], ColWidths=[100;100;100;114]
