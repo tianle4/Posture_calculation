@@ -2005,35 +2005,35 @@ LOAD D:/msys64/mingw64/bin/../lib/gcc/arm-none-eabi/13.3.0/thumb/v7-m/nofp\libgc
  .debug_line    0x000096ea       0x9a D:/msys64/mingw64/bin/../lib/gcc/arm-none-eabi/13.3.0/thumb/v7-m/nofp\libgcc.a(_arm_cmpsf2.o)
  .debug_line    0x00009784       0x57 D:/msys64/mingw64/bin/../lib/gcc/arm-none-eabi/13.3.0/thumb/v7-m/nofp\libgcc.a(_arm_unordsf2.o)
 
-.debug_str      0x00000000     0x2fa9
- .debug_str     0x00000000     0x2fa9 build/main.o
-                                0xb0f (size before relaxing)
- .debug_str     0x00002fa9      0x19e build/gpio.o
- .debug_str     0x00002fa9      0x6ff build/i2c.o
- .debug_str     0x00002fa9      0x1db build/stm32f1xx_it.o
- .debug_str     0x00002fa9      0x1d8 build/stm32f1xx_hal_msp.o
- .debug_str     0x00002fa9      0xf7e build/stm32f1xx_hal_i2c.o
- .debug_str     0x00002fa9      0x8cb build/stm32f1xx_hal.o
- .debug_str     0x00002fa9      0x5e4 build/stm32f1xx_hal_rcc.o
- .debug_str     0x00002fa9      0x3b9 build/stm32f1xx_hal_gpio.o
- .debug_str     0x00002fa9      0x970 build/stm32f1xx_hal_cortex.o
- .debug_str     0x00002fa9      0x20d build/system_stm32f1xx.o
- .debug_str     0x00002fa9      0x287 build/bsp_dwt.o
- .debug_str     0x00002fa9       0x4d build/startup_stm32f103xe.o
- .debug_str     0x00002fa9      0x722 D:/msys64/mingw64/bin/../lib/gcc/arm-none-eabi/13.3.0/../../../../arm-none-eabi/lib/thumb/v7-m/nofp\libc_nano.a(libc_a-findfp.o)
- .debug_str     0x00002fa9      0x193 D:/msys64/mingw64/bin/../lib/gcc/arm-none-eabi/13.3.0/../../../../arm-none-eabi/lib/thumb/v7-m/nofp\libc_nano.a(libc_a-memset.o)
- .debug_str     0x00002fa9      0x49f D:/msys64/mingw64/bin/../lib/gcc/arm-none-eabi/13.3.0/../../../../arm-none-eabi/lib/thumb/v7-m/nofp\libc_nano.a(libc_a-impure.o)
- .debug_str     0x00002fa9      0x499 D:/msys64/mingw64/bin/../lib/gcc/arm-none-eabi/13.3.0/../../../../arm-none-eabi/lib/thumb/v7-m/nofp\libc_nano.a(libc_a-errno.o)
- .debug_str     0x00002fa9      0x1e0 D:/msys64/mingw64/bin/../lib/gcc/arm-none-eabi/13.3.0/../../../../arm-none-eabi/lib/thumb/v7-m/nofp\libc_nano.a(libc_a-init.o)
- .debug_str     0x00002fa9      0x12b D:/msys64/mingw64/bin/../lib/gcc/arm-none-eabi/13.3.0/thumb/v7-m/nofp\libgcc.a(_arm_addsubdf3.o)
- .debug_str     0x00002fa9       0xab D:/msys64/mingw64/bin/../lib/gcc/arm-none-eabi/13.3.0/thumb/v7-m/nofp\libgcc.a(_arm_muldivdf3.o)
- .debug_str     0x00002fa9      0x134 D:/msys64/mingw64/bin/../lib/gcc/arm-none-eabi/13.3.0/thumb/v7-m/nofp\libgcc.a(_arm_cmpdf2.o)
- .debug_str     0x00002fa9       0x99 D:/msys64/mingw64/bin/../lib/gcc/arm-none-eabi/13.3.0/thumb/v7-m/nofp\libgcc.a(_arm_unorddf2.o)
- .debug_str     0x00002fa9       0x98 D:/msys64/mingw64/bin/../lib/gcc/arm-none-eabi/13.3.0/thumb/v7-m/nofp\libgcc.a(_arm_truncdfsf2.o)
- .debug_str     0x00002fa9      0x11f D:/msys64/mingw64/bin/../lib/gcc/arm-none-eabi/13.3.0/thumb/v7-m/nofp\libgcc.a(_arm_addsubsf3.o)
- .debug_str     0x00002fa9       0xab D:/msys64/mingw64/bin/../lib/gcc/arm-none-eabi/13.3.0/thumb/v7-m/nofp\libgcc.a(_arm_muldivsf3.o)
- .debug_str     0x00002fa9      0x134 D:/msys64/mingw64/bin/../lib/gcc/arm-none-eabi/13.3.0/thumb/v7-m/nofp\libgcc.a(_arm_cmpsf2.o)
- .debug_str     0x00002fa9       0x99 D:/msys64/mingw64/bin/../lib/gcc/arm-none-eabi/13.3.0/thumb/v7-m/nofp\libgcc.a(_arm_unordsf2.o)
+.debug_str      0x00000000     0x2fa7
+ .debug_str     0x00000000     0x2fa7 build/main.o
+                                0xb0d (size before relaxing)
+ .debug_str     0x00002fa7      0x19e build/gpio.o
+ .debug_str     0x00002fa7      0x6ff build/i2c.o
+ .debug_str     0x00002fa7      0x1db build/stm32f1xx_it.o
+ .debug_str     0x00002fa7      0x1d8 build/stm32f1xx_hal_msp.o
+ .debug_str     0x00002fa7      0xf7e build/stm32f1xx_hal_i2c.o
+ .debug_str     0x00002fa7      0x8cb build/stm32f1xx_hal.o
+ .debug_str     0x00002fa7      0x5e4 build/stm32f1xx_hal_rcc.o
+ .debug_str     0x00002fa7      0x3b9 build/stm32f1xx_hal_gpio.o
+ .debug_str     0x00002fa7      0x970 build/stm32f1xx_hal_cortex.o
+ .debug_str     0x00002fa7      0x20d build/system_stm32f1xx.o
+ .debug_str     0x00002fa7      0x287 build/bsp_dwt.o
+ .debug_str     0x00002fa7       0x4d build/startup_stm32f103xe.o
+ .debug_str     0x00002fa7      0x722 D:/msys64/mingw64/bin/../lib/gcc/arm-none-eabi/13.3.0/../../../../arm-none-eabi/lib/thumb/v7-m/nofp\libc_nano.a(libc_a-findfp.o)
+ .debug_str     0x00002fa7      0x193 D:/msys64/mingw64/bin/../lib/gcc/arm-none-eabi/13.3.0/../../../../arm-none-eabi/lib/thumb/v7-m/nofp\libc_nano.a(libc_a-memset.o)
+ .debug_str     0x00002fa7      0x49f D:/msys64/mingw64/bin/../lib/gcc/arm-none-eabi/13.3.0/../../../../arm-none-eabi/lib/thumb/v7-m/nofp\libc_nano.a(libc_a-impure.o)
+ .debug_str     0x00002fa7      0x499 D:/msys64/mingw64/bin/../lib/gcc/arm-none-eabi/13.3.0/../../../../arm-none-eabi/lib/thumb/v7-m/nofp\libc_nano.a(libc_a-errno.o)
+ .debug_str     0x00002fa7      0x1e0 D:/msys64/mingw64/bin/../lib/gcc/arm-none-eabi/13.3.0/../../../../arm-none-eabi/lib/thumb/v7-m/nofp\libc_nano.a(libc_a-init.o)
+ .debug_str     0x00002fa7      0x12b D:/msys64/mingw64/bin/../lib/gcc/arm-none-eabi/13.3.0/thumb/v7-m/nofp\libgcc.a(_arm_addsubdf3.o)
+ .debug_str     0x00002fa7       0xab D:/msys64/mingw64/bin/../lib/gcc/arm-none-eabi/13.3.0/thumb/v7-m/nofp\libgcc.a(_arm_muldivdf3.o)
+ .debug_str     0x00002fa7      0x134 D:/msys64/mingw64/bin/../lib/gcc/arm-none-eabi/13.3.0/thumb/v7-m/nofp\libgcc.a(_arm_cmpdf2.o)
+ .debug_str     0x00002fa7       0x99 D:/msys64/mingw64/bin/../lib/gcc/arm-none-eabi/13.3.0/thumb/v7-m/nofp\libgcc.a(_arm_unorddf2.o)
+ .debug_str     0x00002fa7       0x98 D:/msys64/mingw64/bin/../lib/gcc/arm-none-eabi/13.3.0/thumb/v7-m/nofp\libgcc.a(_arm_truncdfsf2.o)
+ .debug_str     0x00002fa7      0x11f D:/msys64/mingw64/bin/../lib/gcc/arm-none-eabi/13.3.0/thumb/v7-m/nofp\libgcc.a(_arm_addsubsf3.o)
+ .debug_str     0x00002fa7       0xab D:/msys64/mingw64/bin/../lib/gcc/arm-none-eabi/13.3.0/thumb/v7-m/nofp\libgcc.a(_arm_muldivsf3.o)
+ .debug_str     0x00002fa7      0x134 D:/msys64/mingw64/bin/../lib/gcc/arm-none-eabi/13.3.0/thumb/v7-m/nofp\libgcc.a(_arm_cmpsf2.o)
+ .debug_str     0x00002fa7       0x99 D:/msys64/mingw64/bin/../lib/gcc/arm-none-eabi/13.3.0/thumb/v7-m/nofp\libgcc.a(_arm_unordsf2.o)
 
 .comment        0x00000000       0x24
  .comment       0x00000000       0x24 build/main.o

@@ -44,18 +44,19 @@ typedef struct{
   int16_t temperature;
 }MPU6050;
 
-typedef struct {
-  float angle;      // 滤波后的角度
-  float bias;       // 陀螺仪零漂
-  float P[2][2];    // 估计误差协方差
-  float Q_angle;    // 角度过程噪声协方差
-  float Q_bias;     // 陀螺仪偏置过程噪声协方差
-  float R_measure;  // 测量噪声协方差
+typedef struct{
+  float angle;      
+  float bias;     
+  float P[2][2];   
+  float Q_angle;   
+  float Q_bias;     
+  float measure;  
 } KalmanFilter;
 
-typedef struct {
+typedef struct{
   float w,x,y,z;
 }Quaternion;
+
 
 /* USER CODE END PTD */
 
@@ -143,7 +144,7 @@ int main(void)
   void updateQuaternion(Quaternion *q, int16_t gx, int16_t gy, int16_t gz, float dt);
   void calculateAngles(Quaternion *q, float *roll, float *pitch, float *yaw);
 
-  void kalmanInit(KalmanFilter *filter, float Q_angle, float Q_bias, float R_measure);
+  void kalmanInit(KalmanFilter *filter, float Q_angle, float Q_bias, float measure);
   kalmanInit(&rollKalman, 0.001f, 0.003f, 0.03f);
   kalmanInit(&pitchKalman, 0.001f, 0.003f, 0.03f);
   kalmanInit(&yawKalman, 0.001f, 0.003f, 0.03f);
@@ -153,7 +154,7 @@ int main(void)
   q.w = 1.0f;
   q.x = 0.0f;
   q.y = 0.0f;
-  q.z = 0.0f;
+  q.z = 0.0f;//四元数单位矩阵
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -177,9 +178,6 @@ int main(void)
 
     filtered_roll = kalmanUpdate(&rollKalman, accel_roll, gyro_roll, dt);
     filtered_pitch = kalmanUpdate(&pitchKalman, accel_pitch, gyro_pitch, dt);
-      
-    // 注意：yaw角不能从加速度计得到，需要磁力计
-    // 这里简单地使用四元数计算的yaw值
     filtered_yaw = raw_yaw;
 
     roll = filtered_roll;
@@ -241,6 +239,7 @@ void MPU6050_read_data(void)
 
   HAL_I2C_Mem_Read(&hi2c1,MPU6050_Address,MPU6050_Accel_x,1,readBuffer,14,HAL_MAX_DELAY);
   HAL_I2C_Mem_Read(&hi2c1,MPU6050_Address,MPU6050_Temp,1,temp_data,2,HAL_MAX_DELAY);
+  
   MPU6050_Data.accel_x = (readBuffer[0] << 8) | readBuffer[1];
   MPU6050_Data.accel_y = (readBuffer[2] << 8) | readBuffer[3];
   MPU6050_Data.accel_z = (readBuffer[4] << 8) | readBuffer[5];
@@ -308,14 +307,15 @@ void updateQuaternion(Quaternion *q, int16_t gx, int16_t gy, int16_t gz, float d
   InitQuaternion(q);
 }
 
-void calculateAngles(Quaternion *q, float *roll, float *pitch, float *yaw) //简单计算姿态角（积分）
+void calculateAngles(Quaternion *q, float *roll, float *pitch, float *yaw) //四元数计算姿态角
 {
   *roll = atan2(2 * (q->w * q->x + q->y * q->z), 1 - 2 * (q->x * q->x + q->y * q->y));
   *pitch = asin(2 * (q->w * q->y - q->z * q->x));
   *yaw = atan2(2 * (q->w * q->z + q->x * q->y), 1 - 2 * (q->y * q->y + q->z * q->z));
+  // *yaw = atan2(2.0f * (q->x * q->y + q->w * q->z), q->w * q->w + q->x * q->x - q->y * q->y - q->z * q->z);
 }
 
-void kalmanInit(KalmanFilter *filter, float Q_angle, float Q_bias, float R_measure) //卡尔曼滤波初始化
+void kalmanInit(KalmanFilter *filter, float Q_angle, float Q_bias, float measure) //卡尔曼滤波初始化
 {
   filter->angle = 0.0f;
   filter->bias = 0.0f;
@@ -327,7 +327,7 @@ void kalmanInit(KalmanFilter *filter, float Q_angle, float Q_bias, float R_measu
   
   filter->Q_angle = Q_angle;
   filter->Q_bias = Q_bias;
-  filter->R_measure = R_measure;
+  filter->measure = measure;
 }
 
 float kalmanUpdate(KalmanFilter *filter, float newAngle, float newRate, float dt) //卡尔曼滤波运算
@@ -342,7 +342,7 @@ float kalmanUpdate(KalmanFilter *filter, float newAngle, float newRate, float dt
   
   // 更新步骤
   float y = newAngle - filter->angle;
-  float S = filter->P[0][0] + filter->R_measure;
+  float S = filter->P[0][0] + filter->measure;
   float K[2];
   K[0] = filter->P[0][0] / S;
   K[1] = filter->P[1][0] / S;
@@ -364,12 +364,12 @@ float kalmanUpdate(KalmanFilter *filter, float newAngle, float newRate, float dt
 void calculateAccelAngles(float *accel_roll, float *accel_pitch) 
 {
   // 将原始整数值转换为物理量
-  float accel_factor = 16384.0f; // 对于±2g量程
+  float accel_factor = 16384.0f;
   float ax = MPU6050_Data.accel_x / accel_factor;
   float ay = MPU6050_Data.accel_y / accel_factor;
   float az = MPU6050_Data.accel_z / accel_factor;
   
-  // 通过加速度计计算roll和pitch角度
+  // 加速度计计算
   *accel_roll = atan2f(ay, az) * 180.0f / M_PI;
   *accel_pitch = atan2f(-ax, sqrtf(ay * ay + az * az)) * 180.0f / M_PI;
 }
